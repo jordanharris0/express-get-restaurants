@@ -34,7 +34,7 @@ app.delete("/restaurants/:id", async (req, res) => {
   const id = req.params.id;
   const restaurant = await Restaurant.findByPk(id);
   await restaurant.destroy();
-  res.status(204).send();
+  res.status(204).send({ message: "Restaurant deleted" });
 });
 
 module.exports = app;
