@@ -4,6 +4,8 @@ const restaurants = express.Router();
 const Restaurant = require("../models/Restaurant");
 const db = require("../db/connection");
 
+const { check, validationResult } = require("express-validator");
+
 restaurants.use(express.json());
 restaurants.use(express.urlencoded({ extended: true }));
 
@@ -17,10 +19,23 @@ restaurants.get("/:id", async (req, res) => {
   res.json(restaurant);
 });
 
-restaurants.post("/", async (req, res) => {
-  const restaurant = await Restaurant.create(req.body);
-  res.status(201).json(restaurant);
-});
+restaurants.post(
+  "/",
+  [
+    check("name").not().isEmpty(),
+    check("location").not().isEmpty(),
+    check("cuisine").not().isEmpty(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    } else {
+      const restaurant = await Restaurant.create(req.body);
+      res.status(201).json(restaurant);
+    }
+  }
+);
 
 restaurants.put("/:id", async (req, res) => {
   const id = req.params.id;

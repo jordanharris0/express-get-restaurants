@@ -41,6 +41,21 @@ describe("/restaurant endpoint", () => {
     ]);
   });
 
+  test("POST /restaurants server side validation", async () => {
+    const response = await request(app).post("/restaurants").send({
+      name: "",
+      location: "",
+      cuisine: "",
+    });
+    const responseData = JSON.parse(response.text);
+
+    expect(response.statusCode).toBe(400);
+    expect(responseData.errors[0].msg).toBe("Invalid value");
+    expect(responseData.errors[0].path).toBe("name");
+    expect(responseData.errors[1].path).toBe("location");
+    expect(responseData.errors[2].path).toBe("cuisine");
+  });
+
   test("POST /restaurants", async () => {
     const response = await request(app).post("/restaurants").send({
       name: "Whata",
